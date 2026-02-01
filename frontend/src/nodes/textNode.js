@@ -1,35 +1,39 @@
-// textNode.js
+import { useMemo, useState } from "react";
+import { Position } from "reactflow";
+import { BaseNode } from "./BaseNode";
 
-import { useState } from 'react';
-import { Handle, Position } from 'reactflow';
+const extractVars = (text) =>
+  [...text.matchAll(/{{\s*([a-zA-Z_$][\w$]*)\s*}}/g)].map((m) => m[1]);
 
 export const TextNode = ({ id, data }) => {
-  const [currText, setCurrText] = useState(data?.text || '{{input}}');
+  const [text, setText] = useState(data?.text || "");
 
-  const handleTextChange = (e) => {
-    setCurrText(e.target.value);
-  };
+  const variables = useMemo(() => extractVars(text), [text]);
 
   return (
-    <div style={{width: 200, height: 80, border: '1px solid black'}}>
-      <div>
-        <span>Text</span>
-      </div>
-      <div>
-        <label>
-          Text:
-          <input 
-            type="text" 
-            value={currText} 
-            onChange={handleTextChange} 
-          />
-        </label>
-      </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        id={`${id}-output`}
+    <BaseNode
+      title="Text"
+      width={200 + Math.min(text.length * 2, 200)}
+      handles={[
+        ...variables.map((v, i) => ({
+          type: "target",
+          position: Position.Left,
+          id: `${id}-${v}`,
+          style: { top: `${30 + i * 20}px` },
+        })),
+        {
+          type: "source",
+          position: Position.Right,
+          id: `${id}-output`,
+        },
+      ]}
+    >
+      <textarea
+        value={text}
+        rows={Math.max(2, text.split("\n").length)}
+        onChange={(e) => setText(e.target.value)}
+        style={{ width: "100%" }}
       />
-    </div>
+    </BaseNode>
   );
-}
+};

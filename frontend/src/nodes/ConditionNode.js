@@ -1,0 +1,38 @@
+// ConditionNode.js
+import { useState } from "react";
+import { Position } from "reactflow";
+import { BaseNode } from "./BaseNode";
+
+export const ConditionNode = ({ id }) => {
+  const [condition, setCondition] = useState("");
+
+  return (
+    <BaseNode
+      title="Condition"
+      handles={[
+        { type: "target", position: Position.Left, id: `${id}-input` },
+        {
+          type: "source",
+          position: Position.Right,
+          id: `${id}-true`,
+          style: { top: "35%" },
+        },
+        {
+          type: "source",
+          position: Position.Right,
+          id: `${id}-false`,
+          style: { top: "65%" },
+        },
+      ]}
+    >
+      <label>
+        Condition:
+        <input
+          placeholder="x > 10"
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+        />
+      </label>
+    </BaseNode>
+  );
+};
